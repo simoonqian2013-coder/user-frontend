@@ -138,6 +138,17 @@
         </div>
       </div>
     </div>
+
+    <div class="modal-mask" v-if="successVisible">
+      <div class="modal-card success-card">
+        <div class="success-icon">✓</div>
+        <div class="success-title">提交成功</div>
+        <div class="success-text">申请已提交，请等待审核，我们会尽快与您联系。</div>
+        <div class="modal-footer">
+          <button class="btn btn-solid" @click="successVisible = false">知道了</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -149,6 +160,7 @@ export default {
       pets: [],
       placeholderImage: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=900&q=80',
       modalVisible: false,
+      successVisible: false,
       submitting: false,
       errorMessage: '',
       currentPet: null,
@@ -246,7 +258,7 @@ export default {
         .then(() => {
           this.submitting = false;
           this.closeModal();
-          alert('申请已提交，请等待审核');
+          this.successVisible = true;
         })
         .catch(() => {
           this.submitting = false;
@@ -527,6 +539,36 @@ export default {
 .btn-ghost {
   background: #f8f8f8;
   color: #666;
+}
+
+.success-card {
+  text-align: center;
+  padding: 28px 24px 20px;
+}
+
+.success-icon {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: #ffe9f0;
+  color: var(--orange-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.success-title {
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.success-text {
+  color: var(--muted);
+  font-size: 14px;
 }
 
 @media (max-width: 980px) {
