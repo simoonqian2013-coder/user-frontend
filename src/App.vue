@@ -3,7 +3,7 @@
     <header class="site-header">
       <div class="container header-inner">
         <div class="brand">
-          <div class="brand-icon">❤</div>
+          <img class="brand-logo" src="/logo.svg" alt="宠物领养救助平台" />
           <div class="brand-text">
             <div class="brand-title">宠物领养救助平台</div>
             <div class="brand-sub">Rescue & Care</div>
@@ -13,10 +13,9 @@
           <router-link to="/" exact-active-class="active">首页</router-link>
           <router-link to="/adopt" exact-active-class="active">领养中心</router-link>
           <router-link to="/donation" exact-active-class="active">爱心捐赠</router-link>
-          <a href="#">志愿者</a>
           <router-link to="/stories" exact-active-class="active">救助故事</router-link>
-          <a href="#">联系我们</a>
-          <a href="#">救助知识</a>
+          <router-link to="/contact" exact-active-class="active">联系我们</router-link>
+          <router-link to="/knowledge" exact-active-class="active">救助知识</router-link>
         </nav>
       </div>
     </header>
@@ -115,16 +114,9 @@ a {
   gap: 12px;
 }
 
-.brand-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #ffe6d0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--orange-deep);
-  font-weight: 700;
+.brand-logo {
+  width: 52px;
+  height: 52px;
 }
 
 .brand-title {
