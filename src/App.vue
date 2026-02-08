@@ -12,9 +12,9 @@
         <nav class="nav">
           <router-link to="/" exact-active-class="active">首页</router-link>
           <router-link to="/adopt" exact-active-class="active">领养中心</router-link>
-          <a href="#">爱心捐赠</a>
+          <router-link to="/donation" exact-active-class="active">爱心捐赠</router-link>
           <a href="#">志愿者</a>
-          <a href="#">救助故事</a>
+          <router-link to="/stories" exact-active-class="active">救助故事</router-link>
           <a href="#">联系我们</a>
           <a href="#">救助知识</a>
         </nav>
