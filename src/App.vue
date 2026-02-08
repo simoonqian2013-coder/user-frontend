@@ -60,34 +60,24 @@
           <h2>等待领养的毛孩子</h2>
           <p>它们正在等待一个充满爱的家庭，给它们一个重新开始的机会</p>
         </div>
-        <div class="card-grid">
-          <div class="pet-card">
-            <div class="pet-cover" style="background-image:url('https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=900&q=80')"></div>
+        <div class="card-grid" v-if="topPets.length">
+          <div class="pet-card" v-for="pet in topPets" :key="pet.id">
+            <div
+              class="pet-cover"
+              :style="{ backgroundImage: `url('${getMainImageUrl(pet) || placeholderImage}')` }"
+            ></div>
             <div class="pet-body">
-              <div class="pet-name">小白</div>
-              <div class="pet-meta">2岁 · 金毛</div>
-              <div class="pet-desc">温顺友善，喜欢和小朋友玩耍</div>
+              <div class="pet-name">{{ pet.nickname || '-' }}</div>
+              <div class="pet-meta">
+                {{ pet.age != null ? pet.age + '岁' : '-' }} · {{ pet.breed || '-' }}
+              </div>
+              <div class="pet-desc">{{ pet.detail || '温顺可爱，期待与你相遇' }}</div>
               <button class="btn btn-solid full">了解更多</button>
             </div>
           </div>
-          <div class="pet-card">
-            <div class="pet-cover" style="background-image:url('https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=900&q=80')"></div>
-            <div class="pet-body">
-              <div class="pet-name">豆豆</div>
-              <div class="pet-meta">1岁 · 拉布拉多</div>
-              <div class="pet-desc">活泼可爱，很聪明，容易训练</div>
-              <button class="btn btn-solid full">了解更多</button>
-            </div>
-          </div>
-          <div class="pet-card">
-            <div class="pet-cover" style="background-image:url('https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?auto=format&fit=crop&w=900&q=80')"></div>
-            <div class="pet-body">
-              <div class="pet-name">毛毛</div>
-              <div class="pet-meta">3岁 · 边牧</div>
-              <div class="pet-desc">聪明伶俐，忠诚可靠的伙伴</div>
-              <button class="btn btn-solid full">了解更多</button>
-            </div>
-          </div>
+        </div>
+        <div class="empty-tip" v-else>
+          暂无可领养动物
         </div>
         <div class="center-actions">
           <button class="btn btn-solid">查看所有待领养动物</button>
@@ -137,7 +127,46 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  data () {
+    return {
+      pets: [],
+      placeholderImage: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=900&q=80'
+    };
+  },
+  computed: {
+    topPets () {
+      const list = Array.isArray(this.pets) ? this.pets : [];
+      return list.filter(item => item && item.status === 1).slice(0, 3);
+    }
+  },
+  created () {
+    this.fetchPets();
+  },
+  methods: {
+    fetchPets () {
+      fetch('/api/pets?status=1')
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            this.pets = data;
+          } else if (data && Array.isArray(data.data)) {
+            this.pets = data.data;
+          } else {
+            this.pets = [];
+          }
+        })
+        .catch(() => {
+          this.pets = [];
+        });
+    },
+    getMainImageUrl (pet) {
+      if (!pet) return '';
+      const list = Array.isArray(pet.imageUrls) ? pet.imageUrls : [];
+      const mainItem = list.find(item => item && item.isMain);
+      return (mainItem && mainItem.url) || (list[0] && list[0].url) || pet.image || '';
+    }
+  }
 };
 </script>
 
@@ -411,6 +440,12 @@ a {
 .pet-desc {
   color: #4b5563;
   margin-bottom: 18px;
+}
+
+.empty-tip {
+  text-align: center;
+  color: var(--muted);
+  padding: 24px 0 10px;
 }
 
 .btn.full {
