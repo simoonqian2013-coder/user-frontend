@@ -7,8 +7,8 @@
         <h1>给流浪动物一个温暖的家</h1>
         <p class="hero-desc">每一个生命都值得被善待，每一份爱心都能改变一个生命的轨迹</p>
         <div class="hero-actions">
-          <button class="btn btn-solid">立即领养</button>
-          <button class="btn btn-outline">爱心捐赠</button>
+          <router-link class="btn btn-solid" to="/adopt">立即领养</router-link>
+          <router-link class="btn btn-outline" to="/donation">爱心捐赠</router-link>
         </div>
       </div>
     </section>
@@ -69,8 +69,8 @@
         <h2>加入我们的爱心行动</h2>
         <p>无论是领养、捐赠还是志愿服务，每一份参与都是对生命的尊重和关爱</p>
         <div class="cta-actions">
-          <button class="btn btn-light">成为志愿者</button>
-          <button class="btn btn-outline-light">查看救助故事</button>
+          <router-link class="btn btn-light" to="/donation">爱心捐赠</router-link>
+          <router-link class="btn btn-outline-light" to="/stories">查看救助故事</router-link>
         </div>
       </div>
     </section>
