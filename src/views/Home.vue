@@ -51,7 +51,7 @@
                 {{ pet.age != null ? pet.age + '岁' : '-' }} · {{ pet.breed || '-' }}
               </div>
               <div class="pet-desc">{{ pet.detail || '温顺可爱，期待与你相遇' }}</div>
-              <button class="btn btn-solid full">了解更多</button>
+              <router-link class="btn btn-solid full pet-link" to="/adopt">了解更多</router-link>
             </div>
           </div>
         </div>
@@ -299,6 +299,13 @@ export default {
 
 .btn.full {
   width: 100%;
+}
+
+.pet-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .center-actions {

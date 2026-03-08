@@ -37,8 +37,26 @@
 
     <section class="pet-section">
       <div class="container">
-        <div class="pet-grid" v-if="pets.length">
-          <div class="pet-card" v-for="pet in pets" :key="pet.id">
+        <div class="pet-filter">
+          <button
+            class="filter-btn"
+            :class="{ active: activeCategory === 'ALL' }"
+            @click="activeCategory = 'ALL'"
+          >全部</button>
+          <button
+            class="filter-btn"
+            :class="{ active: activeCategory === 'DOG' }"
+            @click="activeCategory = 'DOG'"
+          >狗狗</button>
+          <button
+            class="filter-btn"
+            :class="{ active: activeCategory === 'CAT' }"
+            @click="activeCategory = 'CAT'"
+          >猫猫</button>
+        </div>
+
+        <div class="pet-grid" v-if="filteredPets.length">
+          <div class="pet-card" v-for="pet in filteredPets" :key="pet.id">
             <div class="pet-cover" :style="{ backgroundImage: `url('${getMainImageUrl(pet) || placeholderImage}')` }">
               <span class="pet-tag">{{ sizeLabel(pet) }}</span>
             </div>
@@ -158,6 +176,7 @@ export default {
   data () {
     return {
       pets: [],
+      activeCategory: 'ALL',
       placeholderImage: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=900&q=80',
       modalVisible: false,
       successVisible: false,
@@ -174,6 +193,12 @@ export default {
         reason: ''
       }
     };
+  },
+  computed: {
+    filteredPets () {
+      if (this.activeCategory === 'ALL') return this.pets;
+      return this.pets.filter(pet => this.petCategory(pet) === this.activeCategory);
+    }
   },
   created () {
     this.fetchPets();
@@ -212,6 +237,21 @@ export default {
       if (age <= 1) return '小型宠';
       if (age <= 3) return '中型宠';
       return '大型宠';
+    },
+    petCategory (pet) {
+      const text = [
+        pet && pet.type,
+        pet && pet.species,
+        pet && pet.category,
+        pet && pet.breed
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+      if (text.includes('dog') || text.includes('犬') || text.includes('狗')) return 'DOG';
+      if (text.includes('cat') || text.includes('猫')) return 'CAT';
+      return 'DOG';
     },
     openApply (pet) {
       this.currentPet = pet;
@@ -322,6 +362,28 @@ export default {
 
 .pet-section {
   padding: 10px 0 40px;
+}
+
+.pet-filter {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.filter-btn {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #6b7280;
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.filter-btn.active {
+  border-color: var(--orange-deep);
+  color: var(--orange-deep);
+  background: #fff3f6;
 }
 
 .pet-grid {

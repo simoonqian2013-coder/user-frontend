@@ -12,29 +12,33 @@
         <div class="donation-card">
           <div class="card-title">
             <span class="icon">❤</span>
-            我要捐赠
+            爱心倡议
           </div>
-          <p class="card-desc">选择捐赠金额，每一份爱心都珍贵</p>
-          <div class="amount-grid">
-            <button
-              v-for="item in quickAmounts"
-              :key="item"
-              class="amount-btn"
-              :class="{ active: amount === item }"
-              @click="amount = item"
-            >¥{{ item }}</button>
-          </div>
-          <div class="form-item">
-            <label>自定义金额</label>
-            <input v-model="customAmount" type="number" min="1" placeholder="¥ 输入其他金额" />
-          </div>
-          <div class="form-item">
-            <label>姓名（选填）</label>
-            <input v-model="donorName" type="text" placeholder="请输入您的姓名" />
-          </div>
-          <div class="form-item">
-            <label>留言（选填）</label>
-            <textarea v-model="donorNote" rows="3" placeholder="写下您想对毛孩子们说的话..."></textarea>
+          <div class="initiative-content">
+            <p>流浪动物的生活环境十分艰难，它们需要食物、医疗和温暖的住所。</p>
+            <p>本平台致力于为流浪动物提供救助和领养服务，您的每一份支持都会为它们带来新的希望。</p>
+            <p>如果您愿意参与到流浪动物救助行动中，您可以通过以下方式：</p>
+            <ol class="initiative-list">
+              <li>
+                <strong>扫码捐赠</strong>
+                <div>通过微信或支付宝扫码即可完成捐赠</div>
+              </li>
+              <li>
+                <strong>联系工作人员</strong>
+                <div>如果希望长期资助，可以通过电话联系我们</div>
+              </li>
+              <li>
+                <strong>物资捐赠</strong>
+                <div>也欢迎捐赠宠物粮食、药品等物资</div>
+              </li>
+            </ol>
+            <div class="initiative-usage-title">您的每一份爱心都将用于：</div>
+            <ul class="initiative-usage-list">
+              <li>医疗救助</li>
+              <li>食物供给</li>
+              <li>收留所维护</li>
+              <li>流浪动物绝育</li>
+            </ul>
           </div>
           <div class="qr-box">
             <div class="qr-title">扫码捐赠</div>
@@ -43,6 +47,7 @@
             </div>
             <div class="qr-tip">请使用微信/支付宝扫码完成捐赠</div>
           </div>
+          <div class="thanks-text">感谢您的关注与支持，愿每一只流浪动物都能被温柔以待。</div>
         </div>
 
         <div class="side-column">
@@ -92,11 +97,6 @@ export default {
   name: 'Donation',
   data () {
     return {
-      quickAmounts: [50, 100, 200, 500, 1000],
-      amount: 100,
-      customAmount: '',
-      donorName: '',
-      donorNote: '',
       qrImage: 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=donate',
       usageList: [
         { title: '医疗费用', amount: 12000, percent: 40, desc: '疫苗、绝育、治疗等医疗支出' },
@@ -162,47 +162,37 @@ export default {
   margin: 0 0 16px;
 }
 
-.amount-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
+.initiative-content {
+  color: #4b5563;
+  line-height: 1.9;
+  font-size: 16px;
 }
 
-.amount-btn {
-  border: 1px solid #e6e6e6;
-  background: #fff;
-  padding: 10px 0;
-  border-radius: 6px;
-  cursor: pointer;
+.initiative-content p {
+  margin: 0 0 12px;
+}
+
+.initiative-list {
+  margin: 0 0 14px;
+  padding-left: 20px;
+}
+
+.initiative-list li {
+  margin-bottom: 10px;
+}
+
+.initiative-usage-title {
   font-weight: 600;
+  margin-bottom: 8px;
 }
 
-.amount-btn.active {
-  border-color: var(--orange-deep);
-  color: var(--orange-deep);
-  background: #fff3f6;
+.initiative-usage-list {
+  margin: 0;
+  padding-left: 18px;
 }
 
-.form-item {
-  margin-bottom: 14px;
-}
-
-.form-item label {
-  display: block;
-  font-size: 13px;
+.initiative-usage-list li {
   margin-bottom: 6px;
-  color: var(--muted);
-}
-
-.form-item input,
-.form-item textarea {
-  width: 100%;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-size: 14px;
-  outline: none;
 }
 
 .qr-box {
@@ -231,6 +221,12 @@ export default {
   font-size: 12px;
   color: var(--muted);
   margin-top: 10px;
+}
+
+.thanks-text {
+  margin-top: 14px;
+  color: #6b7280;
+  text-align: center;
 }
 
 .usage-item {
@@ -306,10 +302,6 @@ export default {
 @media (max-width: 980px) {
   .donation-grid {
     grid-template-columns: 1fr;
-  }
-
-  .amount-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>
