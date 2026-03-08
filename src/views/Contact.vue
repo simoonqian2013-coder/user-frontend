@@ -3,7 +3,9 @@
     <section class="page-hero">
       <div class="container">
         <h1>联系我们</h1>
-        <p>如果您有任何问题或建议，请随时与我们联系，我们很乐意为您提供帮助</p>
+        <p class="hero-note">
+          如果您有任何建议或问题，或者在生活中发现需要帮助的流浪动物，欢迎通过电话或邮箱与我们联系。请尽量提供发现地点、动物情况等信息，我们会根据实际情况进行核实与救助。
+        </p>
       </div>
     </section>
 
@@ -24,7 +26,7 @@
         <div class="info-card">
           <div class="info-icon">📍</div>
           <div class="info-title">收留所地址</div>
-          <div class="info-main">北京市朝阳区爱心路123号</div>
+          <div class="info-main">安徽省合肥市瑶海区方庙街道万达华府三期14栋406</div>
           <div class="info-desc">欢迎预约参观，了解我们的工作</div>
         </div>
         <div class="info-card">
@@ -38,85 +40,48 @@
 
     <section class="form-section">
       <div class="container form-grid">
-        <div class="form-card">
-          <div class="card-title">✈ 发送消息</div>
-          <div class="card-desc">填写以下表单，我们会尽快回复您</div>
-          <div class="form-row">
-            <div class="form-item">
-              <label>姓名 *</label>
-              <input v-model="form.name" type="text" placeholder="请输入您的姓名" />
-            </div>
-            <div class="form-item">
-              <label>联系电话</label>
-              <input v-model="form.phone" type="text" placeholder="请输入您的电话" />
-            </div>
+        <div class="side-card">
+          <div class="card-title">收留所位置</div>
+          <div class="card-desc">安徽省合肥市瑶海区方庙街道万达华府三期14栋406</div>
+          <div class="map-box">
+            <iframe
+              class="map-embed"
+              title="收留所位置"
+              src="https://www.openstreetmap.org/export/embed.html?bbox=117.3205%2C31.8726%2C117.3405%2C31.8846&layer=mapnik&marker=31.8786%2C117.3305"
+            ></iframe>
           </div>
-          <div class="form-item">
-            <label>邮箱 *</label>
-            <input v-model="form.email" type="email" placeholder="请输入您的邮箱" />
-          </div>
-          <div class="form-item">
-            <label>咨询类型</label>
-            <select v-model="form.type">
-              <option value="">请选择咨询类型</option>
-              <option value="领养咨询">领养咨询</option>
-              <option value="捐赠咨询">捐赠咨询</option>
-              <option value="志愿者咨询">志愿者咨询</option>
-              <option value="其他">其他</option>
-            </select>
-          </div>
-          <div class="form-item">
-            <label>留言内容 *</label>
-            <textarea v-model="form.message" rows="4" placeholder="请详细描述您的问题或建议..."></textarea>
-          </div>
-          <button class="btn btn-solid" @click="submit">发送消息</button>
-          <div class="form-tip" v-if="tip">{{ tip }}</div>
+          <ul class="traffic-list">
+            <li>地铁：10号线爱心站A出口，步行5分钟</li>
+            <li>公交：123路、456路爱心路站下车</li>
+            <li>自驾：提供免费停车位</li>
+          </ul>
         </div>
 
-        <div class="side-column">
-          <div class="side-card">
-            <div class="card-title">收留所位置</div>
-            <div class="card-desc">北京市朝阳区爱心路123号</div>
-            <div class="map-box">
-              <iframe
-                class="map-embed"
-                title="收留所位置"
-                src="https://www.openstreetmap.org/export/embed.html?bbox=116.4403%2C39.9209%2C116.4503%2C39.9309&layer=mapnik&marker=39.9259%2C116.4453"
-              ></iframe>
-            </div>
-            <ul class="traffic-list">
-              <li>地铁：10号线爱心站A出口，步行5分钟</li>
-              <li>公交：123路、456路爱心路站下车</li>
-              <li>自驾：提供免费停车位</li>
-            </ul>
+        <div class="side-card">
+          <div class="card-title">常见问题</div>
+          <div class="qa-item">
+            <div class="qa-q">如何领养动物？</div>
+            <div class="qa-a">您可以在线提交领养申请，我们会安排工作人员与您联系，进行详细沟通和实地参观。</div>
           </div>
+          <div class="qa-item">
+            <div class="qa-q">可以参观收留所吗？</div>
+            <div class="qa-a">当然可以！请提前电话预约，我们会安排专人介绍和参观。</div>
+          </div>
+          <div class="qa-item">
+            <div class="qa-q">如何成为志愿者？</div>
+            <div class="qa-a">填写志愿者申请表，我们会根据您的时间和技能安排合适的志愿工作。</div>
+          </div>
+          <div class="qa-item">
+            <div class="qa-q">捐赠物品有什么要求？</div>
+            <div class="qa-a">我们需要狗粮、玩具、毯子等用品，请确保物品干净、无损坏。</div>
+          </div>
+        </div>
 
-          <div class="side-card">
-            <div class="card-title">常见问题</div>
-            <div class="qa-item">
-              <div class="qa-q">如何领养动物？</div>
-              <div class="qa-a">您可以在线提交领养申请，我们会安排工作人员与您联系，进行详细沟通和实地参观。</div>
-            </div>
-            <div class="qa-item">
-              <div class="qa-q">可以参观收留所吗？</div>
-              <div class="qa-a">当然可以！请提前电话预约，我们会安排专人介绍和参观。</div>
-            </div>
-            <div class="qa-item">
-              <div class="qa-q">如何成为志愿者？</div>
-              <div class="qa-a">填写志愿者申请表，我们会根据您的时间和技能安排合适的志愿工作。</div>
-            </div>
-            <div class="qa-item">
-              <div class="qa-q">捐赠物品有什么要求？</div>
-              <div class="qa-a">我们需要狗粮、玩具、毯子等用品，请确保物品干净、无损坏。</div>
-            </div>
-          </div>
-
-          <div class="side-card alert-card">
-            <div class="alert-title">紧急救助</div>
-            <div class="alert-text">如果您发现需要紧急救助的流浪动物，请立即联系我们：</div>
-            <div class="alert-hotline">紧急热线：400-123-4567</div>
-            <div class="alert-sub">24小时接听，我们会立即派遣救助人员</div>
-          </div>
+        <div class="side-card alert-card">
+          <div class="alert-title">紧急救助</div>
+          <div class="alert-text">如果您发现需要紧急救助的流浪动物，请立即联系我们：</div>
+          <div class="alert-hotline">紧急热线：400-123-4567</div>
+          <div class="alert-sub">24小时接听，我们会立即派遣救助人员</div>
         </div>
       </div>
     </section>
@@ -125,35 +90,7 @@
 
 <script>
 export default {
-  name: 'Contact',
-  data () {
-    return {
-      form: {
-        name: '',
-        phone: '',
-        email: '',
-        type: '',
-        message: ''
-      },
-      tip: ''
-    };
-  },
-  methods: {
-    submit () {
-      if (!this.form.name.trim() || !this.form.email.trim() || !this.form.message.trim()) {
-        this.tip = '请填写必填项后再提交';
-        return;
-      }
-      this.tip = '消息已发送，我们会尽快回复您。';
-      this.form = {
-        name: '',
-        phone: '',
-        email: '',
-        type: '',
-        message: ''
-      };
-    }
-  }
+  name: 'Contact'
 };
 </script>
 
@@ -169,8 +106,11 @@ export default {
 }
 
 .page-hero p {
-  margin: 0;
+  margin: 0 auto;
   color: var(--muted);
+  max-width: 980px;
+  line-height: 1.9;
+  font-size: 16px;
 }
 
 .info-section {
@@ -225,11 +165,10 @@ export default {
 
 .form-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr;
   gap: 24px;
 }
 
-.form-card,
 .side-card {
   background: #fff;
   border-radius: 10px;
@@ -248,53 +187,8 @@ export default {
   margin-bottom: 16px;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.form-item {
-  margin-bottom: 14px;
-}
-
-.form-item label {
-  display: block;
-  font-size: 13px;
-  margin-bottom: 6px;
-  color: var(--muted);
-}
-
-.form-item input,
-.form-item select,
-.form-item textarea {
-  width: 100%;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 10px 12px;
-  font-size: 14px;
-  outline: none;
-}
-
-.btn {
-  border: none;
-  padding: 12px 28px;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  background: var(--orange-deep);
-  color: #fff;
-  width: 100%;
-}
-
-.form-tip {
-  margin-top: 10px;
-  color: var(--orange-deep);
-}
-
 .map-box {
-  height: 180px;
+  height: 460px;
   background: #eef0f4;
   border-radius: 8px;
   color: #6b7280;
@@ -358,10 +252,12 @@ export default {
 }
 
 @media (max-width: 980px) {
-  .info-grid,
-  .form-grid,
-  .form-row {
+  .info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .map-box {
+    height: 320px;
   }
 }
 </style>
