@@ -33,20 +33,21 @@
         <article class="story-card">
           <div class="story-image">
             <img
-              src="https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=1200&q=80"
-              alt="小白的故事"
+              src="/meizi.jpg"
+              class="story-image-jinmao"
+              alt="梅子的故事"
             />
           </div>
           <div class="story-content">
             <div class="story-meta">
-              <span class="tag">❤ 小白</span>
+              <span class="tag">❤ 梅子</span>
               <span class="date">2024-03-15</span>
             </div>
-            <h2>小白的新生活：从流浪到幸福</h2>
+            <h2>梅子的新生活：从流浪到幸福</h2>
             <p>
-              小白是一只被遗弃在公园里的金毛，当我们发现它时，它瘦弱不堪，眼神中充满了恐惧。
-              经过三个月的精心照料，小白重新焕发了活力。现在，它已经被一个温暖的家庭领养，
-              每天都能在花园里自由奔跑，享受着主人的宠爱。看到小白现在幸福的样子，我们所有的努力都是值得的。
+              梅子是一只被遗弃在公园里的金毛，当我们发现它时，它瘦弱不堪，眼神中充满了恐惧。
+              经过三个月的精心照料，梅子重新焕发了活力。现在，它已经被一个温暖的家庭领养，
+              每天都能在花园里自由奔跑，享受着主人的宠爱。看到梅子现在幸福的样子，我们所有的努力都是值得的。
             </p>
             <div class="story-author">流浪动物救助平台</div>
           </div>
@@ -102,7 +103,7 @@
         <article class="story-card reverse">
           <div class="story-image">
             <img
-              src="https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=1200&q=80"
+              src="/keji.jpg"
               alt="花花的故事"
             />
           </div>
@@ -125,21 +126,21 @@
         <article class="story-card">
           <div class="story-image">
             <img
-              src="https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?auto=format&fit=crop&w=1200&q=80"
-              alt="黑子的故事"
+              src="/tianyuanquan.jpg"
+              alt="阿福的故事"
             />
           </div>
           <div class="story-content">
             <div class="story-meta">
-              <span class="tag">❤ 黑子</span>
+              <span class="tag">❤ 阿福</span>
               <span class="date">2024-02-20</span>
             </div>
-            <h2>黑子的守护使命</h2>
+            <h2>阿福的守护使命</h2>
             <p>
-              黑子是一只忠诚的中华田园犬，被一位独居的老人领养。
-              起初我们担心老人是否能照顾好黑子，但事实证明他们是彼此最好的陪伴。
-              黑子不仅是老人的伙伴，更成了他的守护者。每天散步、买菜，
-              黑子都寸步不离地陪伴着老人。这份跨越种族的深情让所有人都为之动容。
+              阿福是一只忠诚的中华田园犬，被一位独居的老人领养。
+              起初我们担心老人是否能照顾好阿福，但事实证明他们是彼此最好的陪伴。
+              阿福不仅是老人的伙伴，更成了他的守护者。每天散步、买菜，
+              阿福都寸步不离地陪伴着老人。这份跨越种族的深情让所有人都为之动容。
             </p>
             <div class="story-author">流浪动物救助平台</div>
           </div>
@@ -268,6 +269,10 @@ export default {
   object-fit: contain;
   object-position: center;
   background: #f6f0f2;
+}
+
+.story-image-jinmao {
+  object-position: center top;
 }
 
 .story-content {

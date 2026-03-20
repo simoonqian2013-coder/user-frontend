@@ -42,10 +42,21 @@
           </div>
           <div class="qr-box">
             <div class="qr-title">扫码捐赠</div>
-            <div class="qr-image">
-              <img :src="qrImage" alt="收款码" />
+            <div class="qr-grid">
+              <div class="qr-item">
+                <div class="qr-label">微信支付</div>
+                <div class="qr-image">
+                  <img class="qr-wechat" src="/weixin.jpg" alt="微信支付收款码" />
+                </div>
+              </div>
+              <div class="qr-item">
+                <div class="qr-label">支付宝</div>
+                <div class="qr-image">
+                  <img class="qr-alipay" src="/zhifubao.jpg" alt="支付宝收款码" />
+                </div>
+              </div>
             </div>
-            <div class="qr-tip">请使用微信/支付宝扫码完成捐赠</div>
+            <div class="qr-tip">支持微信和支付宝扫码捐赠</div>
           </div>
           <div class="thanks-text">感谢您的关注与支持，愿每一只流浪动物都能被温柔以待。</div>
         </div>
@@ -97,7 +108,6 @@ export default {
   name: 'Donation',
   data () {
     return {
-      qrImage: 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=donate',
       usageList: [
         { title: '医疗费用', amount: 12000, percent: 40, desc: '疫苗、绝育、治疗等医疗支出' },
         { title: '食物饲料', amount: 9000, percent: 30, desc: '狗粮、营养品等日常饮食' },
@@ -208,13 +218,48 @@ export default {
   margin-bottom: 12px;
 }
 
+.qr-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.qr-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.qr-label {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+
+.qr-image {
+  width: 300px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
 .qr-image img {
-  width: 180px;
-  height: 180px;
+  width: 250px;
+  height: 250px;
   object-fit: contain;
   border-radius: 8px;
   background: #fff;
-  padding: 8px;
+  padding: 0;
+}
+
+.qr-wechat {
+}
+
+.qr-alipay {
 }
 
 .qr-tip {
@@ -301,6 +346,10 @@ export default {
 
 @media (max-width: 980px) {
   .donation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .qr-grid {
     grid-template-columns: 1fr;
   }
 }
