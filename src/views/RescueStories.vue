@@ -265,7 +265,9 @@ export default {
 }
 
 .story-image-cat {
-  object-position: 38% 32%;
+  object-fit: contain;
+  object-position: center;
+  background: #f6f0f2;
 }
 
 .story-content {
