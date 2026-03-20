@@ -27,7 +27,7 @@
           <div class="panel-card alert-card">
             <div class="alert-title">紧急救助</div>
             <div class="alert-text">遇到紧急情况请立即联系：</div>
-            <div class="alert-hotline">400-123-4567</div>
+            <div class="alert-hotline">173-5513-2852</div>
             <div class="alert-sub">24小时救助热线</div>
           </div>
         </aside>
@@ -50,12 +50,12 @@
     <section class="cta-section">
       <div class="container cta-card">
         <div class="cta-text">
-          <h2>需要更多帮助？</h2>
-          <p>我们提供专业的咨询服务和培训课程</p>
+          <h2>想了解更多救助信息？</h2>
+          <p>可以继续查看救助故事、联系我们，或前往领养中心了解更多。</p>
         </div>
         <div class="cta-actions">
-          <button class="btn btn-outline-light">联系专家</button>
-          <button class="btn btn-light">了解课程</button>
+          <router-link class="btn btn-outline-light" to="/stories">查看救助故事</router-link>
+          <router-link class="btn btn-light" to="/contact">联系我们</router-link>
         </div>
       </div>
     </section>
@@ -302,6 +302,9 @@ export default {
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   padding: 10px 22px;
   font-size: 14px;

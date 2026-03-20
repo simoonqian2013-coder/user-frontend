@@ -55,7 +55,8 @@
         <article class="story-card reverse">
           <div class="story-image">
             <img
-              src="https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1200&q=80"
+              src="/cat-doudou.jpg"
+              class="story-image-cat"
               alt="豆豆的故事"
             />
           </div>
@@ -78,7 +79,7 @@
         <article class="story-card">
           <div class="story-image">
             <img
-              src="https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?auto=format&fit=crop&w=1200&q=80"
+              src="/bianmu.jpg"
               alt="毛毛的故事"
             />
           </div>
@@ -258,9 +259,13 @@ export default {
 .story-image img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   display: block;
+}
+
+.story-image-cat {
+  object-position: 38% 32%;
 }
 
 .story-content {

@@ -90,11 +90,11 @@
           <div class="contact-grid">
             <div class="contact-item">
               <div class="contact-label">咨询电话</div>
-              <div class="contact-value">400-123-4567</div>
+              <div class="contact-value">173-5513-2852</div>
             </div>
             <div class="contact-item">
               <div class="contact-label">收留所地址</div>
-              <div class="contact-value">北京市朝阳区爱心路123号</div>
+              <div class="contact-value">合肥市瑶海区方庙街道</div>
             </div>
             <div class="contact-item">
               <div class="contact-label">开放时间</div>

@@ -14,19 +14,19 @@
         <div class="info-card">
           <div class="info-icon">📞</div>
           <div class="info-title">联系电话</div>
-          <div class="info-main">400-123-4567</div>
+          <div class="info-main">173-5513-2852</div>
           <div class="info-desc">工作时间内为您提供咨询服务</div>
         </div>
         <div class="info-card">
           <div class="info-icon">✉️</div>
           <div class="info-title">邮箱地址</div>
-          <div class="info-main">rescue@doghelp.com</div>
+          <div class="info-main">2185907473@qq.com</div>
           <div class="info-desc">我们会在24小时内回复您的邮件</div>
         </div>
         <div class="info-card">
           <div class="info-icon">📍</div>
           <div class="info-title">收留所地址</div>
-          <div class="info-main">安徽省合肥市瑶海区方庙街道万达华府三期14栋406</div>
+          <div class="info-main">合肥市瑶海区方庙街道</div>
           <div class="info-desc">欢迎预约参观，了解我们的工作</div>
         </div>
         <div class="info-card">
@@ -42,7 +42,7 @@
       <div class="container form-grid">
         <div class="side-card">
           <div class="card-title">收留所位置</div>
-          <div class="card-desc">安徽省合肥市瑶海区方庙街道万达华府三期14栋406</div>
+          <div class="card-desc">合肥市瑶海区方庙街道</div>
           <div class="map-box">
             <iframe
               class="map-embed"
@@ -80,7 +80,7 @@
         <div class="side-card alert-card">
           <div class="alert-title">紧急救助</div>
           <div class="alert-text">如果您发现需要紧急救助的流浪动物，请立即联系我们：</div>
-          <div class="alert-hotline">紧急热线：400-123-4567</div>
+          <div class="alert-hotline">紧急热线：173-5513-2852</div>
           <div class="alert-sub">24小时接听，我们会立即派遣救助人员</div>
         </div>
       </div>

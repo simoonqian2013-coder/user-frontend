@@ -81,9 +81,9 @@
 
           <div class="donation-card">
             <div class="card-title">联系我们</div>
-            <div class="contact-item">咨询电话：400-123-4567</div>
-            <div class="contact-item">邮箱：donation@doghelp.com</div>
-            <div class="contact-item">地址：北京市朝阳区爱心路123号</div>
+            <div class="contact-item">咨询电话：173-5513-2852</div>
+            <div class="contact-item">邮箱：2185907473@qq.com</div>
+            <div class="contact-item">地址：合肥市瑶海区方庙街道</div>
             <div class="contact-tip">如有捐赠相关问题，欢迎随时联系我们</div>
           </div>
         </div>

@@ -34,16 +34,16 @@
         </div>
         <div class="footer-block">
           <div class="footer-title">联系方式</div>
-          <div class="footer-item">400-123-4567</div>
-          <div class="footer-item">rescue@doghelp.com</div>
-          <div class="footer-item">北京市朝阳区爱心路123号</div>
+          <div class="footer-item">173-5513-2852</div>
+          <div class="footer-item">2185907473@qq.com</div>
+          <div class="footer-item">合肥市瑶海区方庙街道</div>
         </div>
         <div class="footer-block">
           <div class="footer-title">快速链接</div>
-          <div class="footer-item">领养中心</div>
-          <div class="footer-item">爱心捐赠</div>
-          <div class="footer-item">志愿者招募</div>
-          <div class="footer-item">救助故事</div>
+          <router-link class="footer-item footer-link" to="/adopt">领养中心</router-link>
+          <router-link class="footer-item footer-link" to="/donation">爱心捐赠</router-link>
+          <router-link class="footer-item footer-link" to="/knowledge">救助知识</router-link>
+          <router-link class="footer-item footer-link" to="/stories">救助故事</router-link>
         </div>
       </div>
       <div class="footer-bottom">@2026 宠物领养救助平台</div>
@@ -167,7 +167,16 @@ a {
 }
 
 .footer-item {
+  display: block;
   margin-bottom: 10px;
+}
+
+.footer-link {
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: #fff;
 }
 
 .footer-brand {
