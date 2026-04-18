@@ -35,6 +35,68 @@
       </div>
     </section>
 
+    <section class="query-section">
+      <div class="container">
+        <div class="query-card">
+          <div class="query-bar">
+            <div class="query-copy">
+              <div class="query-title">申请查询</div>
+              <div class="query-subtitle">已提交领养申请？请输入申请时填写的姓名和手机号，查看审核进度。</div>
+            </div>
+            <div class="query-form">
+              <input
+                v-model="queryForm.applicantName"
+                type="text"
+                placeholder="请输入姓名"
+                @keyup.enter="submitQuery"
+              />
+              <input
+                v-model="queryForm.phone"
+                type="text"
+                placeholder="请输入手机号"
+                @keyup.enter="submitQuery"
+              />
+              <button class="btn btn-solid query-btn" :disabled="querying" @click="submitQuery">
+                {{ querying ? '查询中...' : '立即查询' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="query-error" v-if="queryError">{{ queryError }}</div>
+
+          <div class="query-results" v-if="querySearched">
+            <div class="query-empty" v-if="!queryResults.length">
+              未查询到符合条件的申请记录，请确认姓名和手机号是否与提交申请时填写的一致。
+            </div>
+
+            <div class="query-result-list" v-else>
+              <div class="query-result-card" v-for="item in queryResults" :key="item.id">
+                <div class="query-result-head">
+                  <div>
+                    <div class="query-pet-name">{{ item.petNickname || '未命名宠物' }}</div>
+                    <div class="query-time">申请时间：{{ formatDateTime(item.createdAt) }}</div>
+                  </div>
+                  <span class="status-pill" :class="statusClass(item.status)">
+                    {{ statusText(item.status) }}
+                  </span>
+                </div>
+                <div class="query-result-body">
+                  <div class="query-line">
+                    <span class="query-label">审核状态</span>
+                    <span>{{ statusSummary(item.status) }}</span>
+                  </div>
+                  <div class="query-line">
+                    <span class="query-label">审核说明</span>
+                    <span>{{ reviewMessage(item) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="pet-section">
       <div class="container">
         <div class="pet-filter">
@@ -182,6 +244,14 @@ export default {
       successVisible: false,
       submitting: false,
       errorMessage: '',
+      queryForm: {
+        applicantName: '',
+        phone: ''
+      },
+      queryResults: [],
+      queryError: '',
+      querySearched: false,
+      querying: false,
       currentPet: null,
       form: {
         name: '',
@@ -220,6 +290,33 @@ export default {
           this.pets = [];
         });
     },
+    submitQuery () {
+      const applicantName = this.queryForm.applicantName.trim();
+      const phone = this.queryForm.phone.trim();
+      if (!applicantName || !phone) {
+        this.queryError = '请输入姓名和手机号';
+        this.querySearched = false;
+        this.queryResults = [];
+        return;
+      }
+
+      this.querying = true;
+      this.queryError = '';
+      fetch(`/api/adoptions/query?applicantName=${encodeURIComponent(applicantName)}&phone=${encodeURIComponent(phone)}`)
+        .then(res => res.json())
+        .then(data => {
+          this.querySearched = true;
+          this.queryResults = data && Array.isArray(data.data) ? data.data : [];
+        })
+        .catch(() => {
+          this.queryError = '查询失败，请稍后重试';
+          this.queryResults = [];
+          this.querySearched = false;
+        })
+        .finally(() => {
+          this.querying = false;
+        });
+    },
     getMainImageUrl (pet) {
       if (!pet) return '';
       const list = Array.isArray(pet.imageUrls) ? pet.imageUrls : [];
@@ -230,6 +327,31 @@ export default {
       if (value === 'MALE') return '雄性';
       if (value === 'FEMALE') return '雌性';
       return value || '-';
+    },
+    formatDateTime (value) {
+      if (!value) return '-';
+      return String(value).replace('T', ' ').slice(0, 19);
+    },
+    statusText (status) {
+      if (status === 1) return '已通过';
+      if (status === 2) return '未通过';
+      return '待审核';
+    },
+    statusClass (status) {
+      if (status === 1) return 'status-approved';
+      if (status === 2) return 'status-rejected';
+      return 'status-pending';
+    },
+    statusSummary (status) {
+      if (status === 1) return '您的申请已审核通过，工作人员将尽快与您联系。';
+      if (status === 2) return '很抱歉，您的申请暂未通过审核。';
+      return '您的申请已提交，工作人员正在审核中，请耐心等待。';
+    },
+    reviewMessage (item) {
+      if (item && item.reviewRemark) return item.reviewRemark;
+      if (item && item.status === 1) return '工作人员将尽快与您联系，请保持电话畅通。';
+      if (item && item.status === 2) return '本次申请暂未通过审核。';
+      return '工作人员正在处理中，请耐心等待。';
     },
     sizeLabel (pet) {
       const age = pet && typeof pet.age === 'number' ? pet.age : null;
@@ -358,6 +480,149 @@ export default {
   margin: 0;
   color: var(--muted);
   line-height: 1.7;
+}
+
+.query-section {
+  padding: 0 0 26px;
+}
+
+.query-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px 28px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.query-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.query-copy {
+  min-width: 240px;
+}
+
+.query-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.query-subtitle {
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.query-form {
+  display: grid;
+  grid-template-columns: minmax(0, 180px) minmax(0, 220px) auto;
+  gap: 12px;
+  flex: 1;
+}
+
+.query-form input {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+.query-btn {
+  white-space: nowrap;
+}
+
+.query-error {
+  margin-top: 12px;
+  color: #e11d48;
+  font-size: 13px;
+}
+
+.query-results {
+  margin-top: 20px;
+}
+
+.query-empty {
+  padding: 18px 0 6px;
+  color: var(--muted);
+}
+
+.query-result-list {
+  display: grid;
+  gap: 14px;
+}
+
+.query-result-card {
+  border: 1px solid #f3d8df;
+  background: #fff8fa;
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+
+.query-result-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.query-pet-name {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.query-time {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-pending {
+  color: #b76e00;
+  background: #fff4d6;
+}
+
+.status-approved {
+  color: #117a43;
+  background: #def7e8;
+}
+
+.status-rejected {
+  color: #c2415b;
+  background: #ffe1e8;
+}
+
+.query-result-body {
+  display: grid;
+  gap: 8px;
+  color: #4b5563;
+  line-height: 1.7;
+}
+
+.query-line {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 10px;
+}
+
+.query-label {
+  color: var(--muted);
 }
 
 .pet-section {
@@ -634,10 +899,37 @@ export default {
 }
 
 @media (max-width: 980px) {
+  .query-bar,
+  .query-form,
   .notice-grid,
   .pet-grid,
   .contact-grid {
     grid-template-columns: 1fr;
+  }
+
+  .query-bar {
+    display: grid;
+  }
+
+  .query-form {
+    display: grid;
+  }
+
+  .query-line {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 640px) {
+  .query-card,
+  .notice-card,
+  .contact-card {
+    padding: 20px;
+  }
+
+  .query-result-head {
+    flex-direction: column;
   }
 }
 </style>
