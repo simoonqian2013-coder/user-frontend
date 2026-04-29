@@ -134,8 +134,7 @@
               </div>
               <div class="pet-desc">{{ pet.detail || '温顺可爱，期待与你相遇' }}</div>
               <div class="pet-info">
-                <div><span class="icon">📅</span> 入院时间：{{ pet.createdAt ? pet.createdAt.slice(0, 10) : '-' }}</div>
-                <div><span class="icon">✅</span> 健康状况：健康良好，已绝育，疫苗齐全</div>
+                <div><span class="icon">📅</span> 登记时间：{{ pet.createdAt ? pet.createdAt.slice(0, 10) : '-' }}</div>
               </div>
               <button class="btn btn-solid full" @click="openApply(pet)">申请领养</button>
             </div>
