@@ -69,7 +69,7 @@
           </div>
           <div class="qa-item">
             <div class="qa-q">如何成为志愿者？</div>
-            <div class="qa-a">填写志愿者申请表，我们会根据您的时间和技能安排合适的志愿工作。</div>
+            <div class="qa-a">通过联系电话联系我们，我们会根据您的时间和技能安排合适的志愿工作。</div>
           </div>
           <div class="qa-item">
             <div class="qa-q">捐赠物品有什么要求？</div>
