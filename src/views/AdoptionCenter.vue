@@ -53,6 +53,7 @@
               <input
                 v-model="queryForm.phone"
                 type="text"
+                maxlength="11"
                 placeholder="请输入手机号"
                 @keyup.enter="submitQuery"
               />
@@ -100,21 +101,29 @@
     <section class="pet-section">
       <div class="container">
         <div class="pet-filter">
-          <button
-            class="filter-btn"
-            :class="{ active: activeCategory === 'ALL' }"
-            @click="activeCategory = 'ALL'"
-          >全部</button>
-          <button
-            class="filter-btn"
-            :class="{ active: activeCategory === 'DOG' }"
-            @click="activeCategory = 'DOG'"
-          >狗狗</button>
-          <button
-            class="filter-btn"
-            :class="{ active: activeCategory === 'CAT' }"
-            @click="activeCategory = 'CAT'"
-          >猫猫</button>
+          <div class="filter-tabs">
+            <button
+              class="filter-btn"
+              :class="{ active: activeCategory === 'ALL' }"
+              @click="activeCategory = 'ALL'"
+            >全部</button>
+            <button
+              class="filter-btn"
+              :class="{ active: activeCategory === 'DOG' }"
+              @click="activeCategory = 'DOG'"
+            >狗狗</button>
+            <button
+              class="filter-btn"
+              :class="{ active: activeCategory === 'CAT' }"
+              @click="activeCategory = 'CAT'"
+            >猫猫</button>
+          </div>
+          <input
+            v-model="petKeyword"
+            class="pet-search"
+            type="text"
+            placeholder="搜索年龄、性别、城市、品种"
+          />
         </div>
 
         <div class="pet-grid" v-if="filteredPets.length">
@@ -140,7 +149,7 @@
             </div>
           </div>
         </div>
-        <div class="empty-tip" v-else>暂无可领养动物</div>
+        <div class="empty-tip" v-else>暂无符合条件的可领养动物</div>
       </div>
     </section>
 
@@ -179,7 +188,7 @@
           </div>
           <div class="form-item">
             <label>联系电话 *</label>
-            <input v-model="form.phone" type="text" placeholder="请输入联系电话" />
+            <input v-model="form.phone" type="text" maxlength="11" placeholder="请输入11位手机号" />
           </div>
           <div class="form-item">
             <label>所在城市 *</label>
@@ -238,6 +247,7 @@ export default {
     return {
       pets: [],
       activeCategory: 'ALL',
+      petKeyword: '',
       placeholderImage: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=900&q=80',
       modalVisible: false,
       successVisible: false,
@@ -265,8 +275,13 @@ export default {
   },
   computed: {
     filteredPets () {
-      if (this.activeCategory === 'ALL') return this.pets;
-      return this.pets.filter(pet => this.petCategory(pet) === this.activeCategory);
+      const keyword = this.petKeyword.trim().toLowerCase();
+      return this.pets.filter(pet => {
+        const categoryMatched = this.activeCategory === 'ALL' || this.petCategory(pet) === this.activeCategory;
+        if (!categoryMatched) return false;
+        if (!keyword) return true;
+        return this.petSearchText(pet).includes(keyword);
+      });
     }
   },
   created () {
@@ -294,6 +309,12 @@ export default {
       const phone = this.queryForm.phone.trim();
       if (!applicantName || !phone) {
         this.queryError = '请输入姓名和手机号';
+        this.querySearched = false;
+        this.queryResults = [];
+        return;
+      }
+      if (!this.isValidPhone(phone)) {
+        this.queryError = '请输入正确的11位手机号';
         this.querySearched = false;
         this.queryResults = [];
         return;
@@ -341,6 +362,25 @@ export default {
       if (status === 2) return 'status-rejected';
       return 'status-pending';
     },
+    petSearchText (pet) {
+      const genderText = this.formatGender(pet && pet.gender);
+      const ageText = pet && pet.age != null ? `${pet.age}岁 ${pet.age}` : '';
+      return [
+        pet && pet.nickname,
+        pet && pet.breed,
+        pet && pet.city,
+        pet && pet.address,
+        pet && pet.detail,
+        pet && pet.type,
+        pet && pet.species,
+        pet && pet.category,
+        genderText,
+        ageText
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+    },
     statusSummary (status) {
       if (status === 1) return '您的申请已审核通过，工作人员将尽快与您联系。';
       if (status === 2) return '很抱歉，您的申请暂未通过审核。';
@@ -351,6 +391,9 @@ export default {
       if (item && item.status === 1) return '工作人员将尽快与您联系，请保持电话畅通。';
       if (item && item.status === 2) return '本次申请暂未通过审核。';
       return '工作人员正在处理中，请耐心等待。';
+    },
+    isValidPhone (phone) {
+      return /^1[3-9]\d{9}$/.test(String(phone).trim());
     },
     sizeLabel (pet) {
       const age = pet && typeof pet.age === 'number' ? pet.age : null;
@@ -397,6 +440,10 @@ export default {
       if (!this.currentPet) return;
       if (!this.form.name.trim() || !this.form.phone.trim() || !this.form.city.trim() || !this.form.address.trim() || !this.form.reason.trim()) {
         this.errorMessage = '请填写所有必填项';
+        return;
+      }
+      if (!this.isValidPhone(this.form.phone)) {
+        this.errorMessage = '请输入正确的11位手机号';
         return;
       }
       this.errorMessage = '';
@@ -630,8 +677,15 @@ export default {
 
 .pet-filter {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
   margin-bottom: 18px;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 10px;
 }
 
 .filter-btn {
@@ -648,6 +702,21 @@ export default {
   border-color: var(--orange-deep);
   color: var(--orange-deep);
   background: #fff3f6;
+}
+
+.pet-search {
+  width: min(360px, 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+}
+
+.pet-search:focus {
+  border-color: var(--orange-deep);
+  box-shadow: 0 0 0 3px rgba(229, 96, 132, 0.12);
 }
 
 .pet-grid {
@@ -917,6 +986,19 @@ export default {
   .query-line {
     grid-template-columns: 1fr;
     gap: 4px;
+  }
+
+  .pet-filter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .filter-tabs {
+    flex-wrap: wrap;
+  }
+
+  .pet-search {
+    width: 100%;
   }
 }
 
