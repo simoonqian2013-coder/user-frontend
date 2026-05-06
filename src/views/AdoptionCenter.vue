@@ -55,6 +55,7 @@
                 type="text"
                 maxlength="11"
                 placeholder="请输入手机号"
+                @input="queryForm.phone = onlyDigits(queryForm.phone)"
                 @keyup.enter="submitQuery"
               />
               <button class="btn btn-solid query-btn" :disabled="querying" @click="submitQuery">
@@ -124,12 +125,19 @@
             type="text"
             placeholder="搜索年龄、性别、城市、品种"
           />
+          <button v-if="petKeyword" class="clear-search" @click="petKeyword = ''">清空</button>
         </div>
+        <div class="pet-count">共找到 {{ filteredPets.length }} 只可领养宠物</div>
 
         <div class="pet-grid" v-if="filteredPets.length">
           <div class="pet-card" v-for="pet in filteredPets" :key="pet.id">
-            <div class="pet-cover" :style="{ backgroundImage: `url('${getMainImageUrl(pet) || placeholderImage}')` }">
+            <div
+              class="pet-cover"
+              :style="{ backgroundImage: `url('${getMainImageUrl(pet) || placeholderImage}')` }"
+              @click="openDetail(pet)"
+            >
               <span class="pet-tag">{{ sizeLabel(pet) }}</span>
+              <span class="image-count" v-if="getPetImages(pet).length > 1">共{{ getPetImages(pet).length }}张</span>
             </div>
             <div class="pet-body">
               <div class="pet-row">
@@ -145,11 +153,14 @@
               <div class="pet-info">
                 <div><span class="icon">📅</span> 登记时间：{{ pet.createdAt ? pet.createdAt.slice(0, 10) : '-' }}</div>
               </div>
-              <button class="btn btn-solid full" @click="openApply(pet)">申请领养</button>
+              <div class="pet-actions">
+                <button class="btn btn-ghost action-btn" @click="openDetail(pet)">查看详情</button>
+                <button class="btn btn-solid action-btn" @click="openApply(pet)">申请领养</button>
+              </div>
             </div>
           </div>
         </div>
-        <div class="empty-tip" v-else>暂无符合条件的可领养动物</div>
+        <div class="empty-tip" v-else>暂无符合条件的宠物，请尝试更换关键词或分类。</div>
       </div>
     </section>
 
@@ -175,6 +186,76 @@
       </div>
     </section>
 
+    <div class="modal-mask" v-if="detailVisible">
+      <div class="modal-card detail-card">
+        <div class="modal-header">
+          <div class="modal-title">{{ detailPet ? detailPet.nickname : '' }} 详情</div>
+          <button class="modal-close" @click="closeDetail">×</button>
+        </div>
+        <div class="detail-body" v-if="detailPet">
+          <div
+            class="detail-main-image"
+            :style="{ backgroundImage: `url('${getDetailImageUrl()}')` }"
+          >
+            <button
+              v-if="getPetImages(detailPet).length > 1"
+              class="image-nav image-nav-prev"
+              @click="switchDetailImage(-1)"
+            >‹</button>
+            <button
+              v-if="getPetImages(detailPet).length > 1"
+              class="image-nav image-nav-next"
+              @click="switchDetailImage(1)"
+            >›</button>
+          </div>
+          <div class="detail-thumbs" v-if="getPetImages(detailPet).length > 1">
+            <button
+              v-for="(url, index) in getPetImages(detailPet)"
+              :key="url + index"
+              class="detail-thumb"
+              :class="{ active: detailImageIndex === index }"
+              :style="{ backgroundImage: `url('${url}')` }"
+              @click="detailImageIndex = index"
+            ></button>
+          </div>
+          <div class="detail-info-grid">
+            <div>
+              <span>年龄</span>
+              <strong>{{ detailPet.age != null ? detailPet.age + '岁' : '-' }}</strong>
+            </div>
+            <div>
+              <span>品种</span>
+              <strong>{{ detailPet.breed || '-' }}</strong>
+            </div>
+            <div>
+              <span>性别</span>
+              <strong>{{ formatGender(detailPet.gender) }}</strong>
+            </div>
+            <div>
+              <span>城市</span>
+              <strong>{{ detailPet.city || '-' }}</strong>
+            </div>
+            <div>
+              <span>登记时间</span>
+              <strong>{{ detailPet.createdAt ? detailPet.createdAt.slice(0, 10) : '-' }}</strong>
+            </div>
+          </div>
+          <div class="detail-address" v-if="detailPet.address">
+            <span>所在地址</span>
+            <p>{{ detailPet.address }}</p>
+          </div>
+          <div class="detail-desc">
+            <span>宠物介绍</span>
+            <p>{{ detailPet.detail || '温顺可爱，期待与你相遇。' }}</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-solid" @click="openApplyFromDetail">申请领养</button>
+          <button class="btn btn-ghost" @click="closeDetail">关闭</button>
+        </div>
+      </div>
+    </div>
+
     <div class="modal-mask" v-if="modalVisible">
       <div class="modal-card">
         <div class="modal-header">
@@ -188,7 +269,13 @@
           </div>
           <div class="form-item">
             <label>联系电话 *</label>
-            <input v-model="form.phone" type="text" maxlength="11" placeholder="请输入11位手机号" />
+            <input
+              v-model="form.phone"
+              type="text"
+              maxlength="11"
+              placeholder="请输入11位手机号"
+              @input="form.phone = onlyDigits(form.phone)"
+            />
           </div>
           <div class="form-item">
             <label>所在城市 *</label>
@@ -214,7 +301,13 @@
           </div>
           <div class="form-item">
             <label>领养原因 *</label>
-            <textarea v-model="form.reason" rows="3" placeholder="请描述您想领养该宠物的原因"></textarea>
+            <textarea
+              v-model="form.reason"
+              rows="3"
+              maxlength="200"
+              placeholder="请描述您想领养该宠物的原因"
+            ></textarea>
+            <div class="char-count">{{ form.reason.length }}/200</div>
           </div>
           <div class="form-error" v-if="errorMessage">{{ errorMessage }}</div>
         </div>
@@ -231,12 +324,13 @@
       <div class="modal-card success-card">
         <div class="success-icon">✓</div>
         <div class="success-title">提交成功</div>
-        <div class="success-text">申请已提交，请等待审核，我们会尽快与您联系。</div>
+        <div class="success-text">申请已提交，请使用姓名和手机号查询审核进度，我们会尽快与您联系。</div>
         <div class="modal-footer">
           <button class="btn btn-solid" @click="successVisible = false">知道了</button>
         </div>
       </div>
     </div>
+    <button v-if="showBackTop" class="back-top" @click="scrollToTop">返回顶部</button>
   </div>
 </template>
 
@@ -250,6 +344,10 @@ export default {
       petKeyword: '',
       placeholderImage: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=900&q=80',
       modalVisible: false,
+      detailVisible: false,
+      detailPet: null,
+      detailImageIndex: 0,
+      showBackTop: false,
       successVisible: false,
       submitting: false,
       errorMessage: '',
@@ -286,6 +384,13 @@ export default {
   },
   created () {
     this.fetchPets();
+  },
+  mounted () {
+    window.addEventListener('scroll', this.handleScroll);
+    this.handleScroll();
+  },
+  beforeDestroy () {
+    window.removeEventListener('scroll', this.handleScroll);
   },
   methods: {
     fetchPets () {
@@ -343,6 +448,23 @@ export default {
       const mainItem = list.find(item => item && item.isMain);
       return (mainItem && mainItem.url) || (list[0] && list[0].url) || pet.image || '';
     },
+    getPetImages (pet) {
+      if (!pet) return [];
+      const urls = Array.isArray(pet.imageUrls)
+        ? pet.imageUrls.map(item => item && item.url).filter(Boolean)
+        : [];
+      if (!urls.length && pet.image) urls.push(pet.image);
+      return urls.length ? urls : [this.placeholderImage];
+    },
+    getDetailImageUrl () {
+      const images = this.getPetImages(this.detailPet);
+      return images[this.detailImageIndex] || images[0] || this.placeholderImage;
+    },
+    switchDetailImage (delta) {
+      const images = this.getPetImages(this.detailPet);
+      if (images.length <= 1) return;
+      this.detailImageIndex = (this.detailImageIndex + delta + images.length) % images.length;
+    },
     formatGender (value) {
       if (value === 'MALE') return '雄性';
       if (value === 'FEMALE') return '雌性';
@@ -395,6 +517,9 @@ export default {
     isValidPhone (phone) {
       return /^1[3-9]\d{9}$/.test(String(phone).trim());
     },
+    onlyDigits (value) {
+      return String(value || '').replace(/\D/g, '').slice(0, 11);
+    },
     sizeLabel (pet) {
       const age = pet && typeof pet.age === 'number' ? pet.age : null;
       if (age == null) return '中型宠';
@@ -431,6 +556,27 @@ export default {
         reason: ''
       };
     },
+    openDetail (pet) {
+      this.detailPet = pet;
+      this.detailImageIndex = 0;
+      this.detailVisible = true;
+    },
+    closeDetail () {
+      this.detailVisible = false;
+      this.detailPet = null;
+      this.detailImageIndex = 0;
+    },
+    openApplyFromDetail () {
+      const pet = this.detailPet;
+      this.closeDetail();
+      this.openApply(pet);
+    },
+    handleScroll () {
+      this.showBackTop = window.pageYOffset > 420;
+    },
+    scrollToTop () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
     closeModal () {
       this.modalVisible = false;
       this.submitting = false;
@@ -444,6 +590,10 @@ export default {
       }
       if (!this.isValidPhone(this.form.phone)) {
         this.errorMessage = '请输入正确的11位手机号';
+        return;
+      }
+      if (this.form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email.trim())) {
+        this.errorMessage = '请输入正确的邮箱地址';
         return;
       }
       this.errorMessage = '';
@@ -719,6 +869,23 @@ export default {
   box-shadow: 0 0 0 3px rgba(229, 96, 132, 0.12);
 }
 
+.clear-search {
+  border: 1px solid #f3c7d4;
+  background: #fff;
+  color: var(--orange-deep);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pet-count {
+  color: var(--muted);
+  font-size: 14px;
+  margin: -6px 0 18px;
+}
+
 .pet-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -739,6 +906,7 @@ export default {
   background-size: cover;
   background-position: center;
   position: relative;
+  cursor: pointer;
 }
 
 .pet-tag {
@@ -751,6 +919,17 @@ export default {
   font-size: 12px;
   color: var(--ink);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.image-count {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(17, 24, 39, 0.72);
+  color: #fff;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
 }
 
 .pet-body {
@@ -817,6 +996,19 @@ export default {
   margin-top: auto;
 }
 
+.pet-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.action-btn {
+  width: 100%;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
 .contact-section {
   padding: 0 0 70px;
 }
@@ -875,6 +1067,13 @@ export default {
   overflow: hidden;
 }
 
+.detail-card {
+  max-width: 720px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+}
+
 .modal-header {
   display: flex;
   align-items: center;
@@ -901,6 +1100,110 @@ export default {
   gap: 14px;
 }
 
+.detail-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.detail-main-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 360px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  background-color: #f5f5f5;
+  position: relative;
+  overflow: hidden;
+}
+
+.image-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(17, 24, 39, 0.62);
+  color: #fff;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.image-nav-prev {
+  left: 14px;
+}
+
+.image-nav-next {
+  right: 14px;
+}
+
+.detail-thumbs {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.detail-thumb {
+  width: 84px;
+  height: 58px;
+  flex: 0 0 auto;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.detail-thumb.active {
+  border-color: var(--orange-deep);
+}
+
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.detail-info-grid div {
+  border: 1px solid #f1dce3;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff8fa;
+}
+
+.detail-info-grid span,
+.detail-address span,
+.detail-desc span {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.detail-info-grid strong {
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.detail-address,
+.detail-desc {
+  margin-top: 16px;
+}
+
+.detail-address p,
+.detail-desc p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.7;
+}
+
 .form-item label {
   display: block;
   font-size: 13px;
@@ -924,11 +1227,19 @@ export default {
   font-size: 13px;
 }
 
+.char-count {
+  text-align: right;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .modal-footer {
   display: flex;
   justify-content: center;
   gap: 12px;
   padding: 16px 20px 22px;
+  flex-shrink: 0;
 }
 
 .btn-ghost {
@@ -966,6 +1277,21 @@ export default {
   font-size: 14px;
 }
 
+.back-top {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 40;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  background: var(--orange-deep);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(229, 96, 132, 0.28);
+}
+
 @media (max-width: 980px) {
   .query-bar,
   .query-form,
@@ -1000,6 +1326,14 @@ export default {
   .pet-search {
     width: 100%;
   }
+
+  .clear-search {
+    width: 96px;
+  }
+
+  .detail-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 640px) {
@@ -1011,6 +1345,22 @@ export default {
 
   .query-result-head {
     flex-direction: column;
+  }
+
+  .pet-actions,
+  .detail-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .image-nav {
+    width: 36px;
+    height: 36px;
+    font-size: 26px;
+  }
+
+  .back-top {
+    right: 16px;
+    bottom: 16px;
   }
 }
 </style>

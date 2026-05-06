@@ -1,16 +1,34 @@
 <template>
   <div class="home">
     <section class="hero">
-      <div class="hero-bg"></div>
+      <div
+        v-for="(slide, index) in heroSlides"
+        :key="slide.title"
+        class="hero-slide"
+        :class="{ active: activeHeroIndex === index }"
+        :style="{ backgroundImage: `url('${slide.image}')` }"
+      ></div>
+      <div class="hero-overlay"></div>
       <div class="container hero-content">
-        <p class="hero-tag">一起行动，为生命留一盏灯</p>
-        <h1>给流浪动物一个温暖的家</h1>
-        <p class="hero-desc">每一个生命都值得被善待，每一份爱心都能改变一个生命的轨迹</p>
+        <p class="hero-tag">{{ currentHero.tag }}</p>
+        <h1>{{ currentHero.title }}</h1>
+        <p class="hero-desc">{{ currentHero.desc }}</p>
         <div class="hero-actions">
-          <router-link class="btn btn-solid" to="/adopt">立即领养</router-link>
-          <router-link class="btn btn-outline" to="/donation">爱心捐赠</router-link>
+          <router-link class="btn btn-solid" :to="currentHero.primaryTo">{{ currentHero.primaryText }}</router-link>
+          <router-link class="btn btn-outline" :to="currentHero.secondaryTo">{{ currentHero.secondaryText }}</router-link>
+        </div>
+        <div class="hero-dots">
+          <button
+            v-for="(slide, index) in heroSlides"
+            :key="slide.title + '-dot'"
+            class="hero-dot"
+            :class="{ active: activeHeroIndex === index }"
+            @click="setHeroSlide(index)"
+          ></button>
         </div>
       </div>
+      <button class="hero-nav hero-prev" @click="switchHeroSlide(-1)">‹</button>
+      <button class="hero-nav hero-next" @click="switchHeroSlide(1)">›</button>
     </section>
 
     <section class="stats">
@@ -64,6 +82,23 @@
       </div>
     </section>
 
+    <section class="feedback">
+      <div class="container">
+        <div class="section-title">
+          <h2>暖心留言</h2>
+          <p>来自领养家庭和志愿者的真实感受，记录每一次善意的抵达</p>
+        </div>
+        <div class="feedback-grid">
+          <div class="feedback-card" v-for="item in feedbackList" :key="item.name">
+            <div class="feedback-icon">❤</div>
+            <p class="feedback-text">“{{ item.content }}”</p>
+            <div class="feedback-person">{{ item.name }}</div>
+            <div class="feedback-tag">{{ item.tag }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="cta">
       <div class="container cta-inner">
         <h2>加入我们的爱心行动</h2>
@@ -83,10 +118,64 @@ export default {
   data () {
     return {
       pets: [],
+      activeHeroIndex: 0,
+      heroTimer: null,
+      heroSlides: [
+        {
+          tag: '温暖领养',
+          title: '给流浪动物一个温暖的家',
+          desc: '每一个生命都值得被善待，每一次领养都是新的开始',
+          image: '/hero-adopt.jpg',
+          primaryText: '立即领养',
+          primaryTo: '/adopt',
+          secondaryText: '查看故事',
+          secondaryTo: '/stories'
+        },
+        {
+          tag: '救助陪伴',
+          title: '看见每一个被救助的生命',
+          desc: '用记录传递善意，用陪伴帮助它们重新靠近生活',
+          image: '/hero-rescue.jpg',
+          primaryText: '救助故事',
+          primaryTo: '/stories',
+          secondaryText: '领养中心',
+          secondaryTo: '/adopt'
+        },
+        {
+          tag: '爱心支持',
+          title: '让爱心持续发生',
+          desc: '您的每一份支持，都能帮助更多毛孩子获得照顾',
+          image: '/hero-donate.jpg',
+          primaryText: '爱心捐赠',
+          primaryTo: '/donation',
+          secondaryText: '联系我们',
+          secondaryTo: '/contact'
+        }
+      ],
+      feedbackList: [
+        {
+          content: '小白到家后很适应，感谢平台工作人员耐心沟通，让我们顺利完成领养。',
+          name: '李女士',
+          tag: '成功领养家庭'
+        },
+        {
+          content: '申请流程很清楚，审核也很负责，能感受到平台对动物和领养人的认真。',
+          name: '张先生',
+          tag: '领养回访'
+        },
+        {
+          content: '希望更多人关注流浪动物，也希望更多毛孩子能等到属于自己的家。',
+          name: '爱心志愿者',
+          tag: '救助支持'
+        }
+      ],
       placeholderImage: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=900&q=80'
     };
   },
   computed: {
+    currentHero () {
+      return this.heroSlides[this.activeHeroIndex] || this.heroSlides[0];
+    },
     topPets () {
       const list = Array.isArray(this.pets) ? this.pets : [];
       return list.filter(item => item && item.status === 1).slice(0, 3);
@@ -94,6 +183,12 @@ export default {
   },
   created () {
     this.fetchPets();
+  },
+  mounted () {
+    this.startHeroTimer();
+  },
+  beforeDestroy () {
+    this.stopHeroTimer();
   },
   methods: {
     fetchPets () {
@@ -117,6 +212,26 @@ export default {
       const list = Array.isArray(pet.imageUrls) ? pet.imageUrls : [];
       const mainItem = list.find(item => item && item.isMain);
       return (mainItem && mainItem.url) || (list[0] && list[0].url) || pet.image || '';
+    },
+    switchHeroSlide (delta) {
+      this.activeHeroIndex = (this.activeHeroIndex + delta + this.heroSlides.length) % this.heroSlides.length;
+      this.startHeroTimer();
+    },
+    setHeroSlide (index) {
+      this.activeHeroIndex = index;
+      this.startHeroTimer();
+    },
+    startHeroTimer () {
+      this.stopHeroTimer();
+      this.heroTimer = window.setInterval(() => {
+        this.activeHeroIndex = (this.activeHeroIndex + 1) % this.heroSlides.length;
+      }, 4500);
+    },
+    stopHeroTimer () {
+      if (this.heroTimer) {
+        window.clearInterval(this.heroTimer);
+        this.heroTimer = null;
+      }
     }
   }
 };
@@ -128,12 +243,30 @@ export default {
   color: #fff;
   padding: 110px 0 130px;
   overflow: hidden;
+  min-height: 520px;
 }
 
-.hero-bg {
+.hero-slide {
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, var(--orange-deep), var(--orange-light));
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity 0.7s ease, transform 1.2s ease;
+}
+
+.hero-slide.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(115, 37, 56, 0.72), rgba(229, 96, 132, 0.48)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.24));
 }
 
 .hero-content {
@@ -166,6 +299,51 @@ export default {
   display: flex;
   gap: 16px;
   justify-content: center;
+}
+
+.hero-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 34px;
+}
+
+.hero-dot {
+  width: 10px;
+  height: 10px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.52);
+  cursor: pointer;
+}
+
+.hero-dot.active {
+  width: 28px;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.hero-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.hero-prev {
+  left: 34px;
+}
+
+.hero-next {
+  right: 34px;
 }
 
 .btn {
@@ -314,6 +492,54 @@ export default {
   margin-top: 34px;
 }
 
+.feedback {
+  background: #fff;
+  padding: 70px 0 86px;
+}
+
+.feedback-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.feedback-card {
+  background: #fff;
+  border: 1px solid #f6d5df;
+  border-radius: 12px;
+  padding: 24px 24px 22px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+}
+
+.feedback-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #ffe6ee;
+  color: var(--orange-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.feedback-text {
+  margin: 0 0 18px;
+  color: #4b5563;
+  line-height: 1.8;
+}
+
+.feedback-person {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.feedback-tag {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .cta {
   background: linear-gradient(120deg, var(--orange-deep), var(--orange));
   padding: 70px 0;
@@ -360,7 +586,8 @@ export default {
 
 @media (max-width: 980px) {
   .stats-grid,
-  .card-grid {
+  .card-grid,
+  .feedback-grid {
     grid-template-columns: 1fr;
   }
 
@@ -371,6 +598,15 @@ export default {
   .hero-actions,
   .cta-actions {
     flex-direction: column;
+  }
+
+  .hero {
+    min-height: 500px;
+    padding: 90px 0 100px;
+  }
+
+  .hero-nav {
+    display: none;
   }
 }
 </style>
